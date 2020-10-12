@@ -2,6 +2,9 @@ package de.hbt.planetexpressbackend.boundary;
 
 import de.hbt.planetexpressbackend.control.PartRepository;
 import de.hbt.planetexpressbackend.entity.Part;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,7 @@ public class PartController {
 
     // Routen zu den HTTP-Aufrufen: GET, POST, PUT und DELETE
     @GetMapping("/parts")
+    @Query(value = "SELECT * FROM PARTS_DB", nativeQuery = true)
     List<Part> getAllParts() {
         return partRepository.findAll();
     }

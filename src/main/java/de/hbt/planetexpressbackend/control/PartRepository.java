@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 // Interface mit Methoden zum: Lesen, Löschen und Erstellen gegen einen Backend-Speicher
 public interface PartRepository extends JpaRepository<Part, Long> {
+
 }
