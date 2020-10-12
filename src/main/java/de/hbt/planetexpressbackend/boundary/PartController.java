@@ -8,24 +8,27 @@ import java.util.List;
 
 @RestController
 public class PartController {
-private final PartRepository partRepository;
 
-public PartController(PartRepository repository){
-    this.partRepository = repository;
-}
-@GetMapping("/parts")
- List<Part> getAll(){
-   return partRepository.findAll();
+    // Repository wird injekted, soll im Controller in einen Web-Layer verpackt werden
+    private final PartRepository partRepository;
 
-}
-@PostMapping
-Part newPart(@RequestBody Part part){
-   return partRepository.save(part);
-}
+    public PartController(PartRepository repository) {
+        this.partRepository = repository;
+    }
+
+    // Routen zu den HTTP-Aufrufen: GET, POST, PUT und DELETE
+    @GetMapping("/parts")
+    List<Part> getAllParts() {
+        return partRepository.findAll();
+    }
+
+    @PostMapping
+    Part addPart(@RequestBody Part part) {
+        return partRepository.save(part);
+    }
 
     @GetMapping("/parts/{id}")
-    Part one(@PathVariable Long id) {
-
+    Part getPartById(@PathVariable Long id) {
         return partRepository.findById(id).orElseThrow(() -> new RuntimeException());
     }
 
@@ -48,6 +51,5 @@ Part newPart(@RequestBody Part part){
     void deletePart(@PathVariable Long id) {
         partRepository.deleteById(id);
     }
-
 
 }
