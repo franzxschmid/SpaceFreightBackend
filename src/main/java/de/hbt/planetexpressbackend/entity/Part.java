@@ -5,29 +5,53 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Data
-@Table(name = "PARTS_DB")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Entity
+@Data
+@Getter
+@Setter
+@Table(name = "part")
 public class Part {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME")
+    @Column
     private String name;
 
-    @Column(name = "QUANTITY")
+    @Column(nullable = false)
     private int quantity;
 
-    public Part(String name, int quantity) {
+    public Part( String name, int quantity) {
+
         this.name = name;
+        this.quantity = quantity;
+    }
+
+
+    public Long getID() {
+        return id;
+    }
+
+    public void setID(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -49,6 +73,6 @@ public class Part {
 
     @Override
     public String toString() {
-        return "ID: " + id + ",  NAME: " + name + ",  QUANTITY: " + quantity;
+        return "id: " + id + ",  name: " + name + ",  quantity: " + quantity;
     }
 }

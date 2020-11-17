@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class LoadDatabase {
 
+
+
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     // Erstellt Part-Entitäten und speichert diese

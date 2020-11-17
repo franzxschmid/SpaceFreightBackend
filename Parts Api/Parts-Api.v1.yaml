@@ -3,7 +3,7 @@ info:
   title: Parts Api
   version: '1.0'
 servers:
-  - url: 'http://localhost:8080'
+  - url: 'http://localhost:8081'
 paths:
   /parts:
     get:
@@ -70,3 +70,14 @@ components:
           type: string
         quantity:
           type: integer
+h2:
+  datasource:
+    url: jdbc:h2:mem:partdb
+    driver-class-name: org.h2.Driver
+    init-sql: h2
+  console:
+    enabled: true
+    path: /console
+    settings:
+      trace: false
+      web-allow-others: false
