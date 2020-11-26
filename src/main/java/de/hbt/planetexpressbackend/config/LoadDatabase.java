@@ -20,10 +20,10 @@ class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(PartRepository repository) {
         return args -> {
-            log.info("Preloading " + repository.save(new Part("Weltraumdachziegel", 12)));
-            log.info("Preloading " + repository.save(new Part("Sauerstoffflaschen", 11)));
-            log.info("Preloading " + repository.save(new Part("Astronautennahrung", 15)));
-            log.info("Preloading " + repository.save(new Part("Raumanzüge", 14)));
+            log.info("Preloading " + repository.save(new Part(1L,"Weltraumdachziegel", 12)));
+            log.info("Preloading " + repository.save(new Part(2L,"Sauerstoffflaschen", 11)));
+            log.info("Preloading " + repository.save(new Part(3L,"Astronautennahrung", 15)));
+            log.info("Preloading " + repository.save(new Part(4L,"Raumanzüge", 14)));
         };
     }
 }

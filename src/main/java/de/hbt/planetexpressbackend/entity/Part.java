@@ -11,49 +11,20 @@ import java.util.Objects;
 @Data
 @Getter
 @Setter
-@Table(name = "part")
+@Table
 public class Part {
 
     @Id
-    @GeneratedValue
     private Long id;
 
-    @Column
+
     private String name;
 
     @Column(nullable = false)
     private int quantity;
 
-    public Part( String name, int quantity) {
-
-        this.name = name;
-        this.quantity = quantity;
-    }
 
 
-    public Long getID() {
-        return id;
-    }
-
-    public void setID(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -73,6 +44,7 @@ public class Part {
 
     @Override
     public String toString() {
-        return "id: " + id + ",  name: " + name + ",  quantity: " + quantity;
+        return "{id=" + id + ", name=" + name + ", quantity=" + quantity + "}" ;
     }
+
 }

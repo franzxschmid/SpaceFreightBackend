@@ -2,10 +2,6 @@ package de.hbt.planetexpressbackend.boundary;
 
 import de.hbt.planetexpressbackend.control.PartRepository;
 import de.hbt.planetexpressbackend.entity.Part;
-import de.hbt.planetexpressbackend.exception.PartNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,37 +23,51 @@ public class PartController {
 
     }
 
-    @PostMapping
+    @PostMapping("/parts")
     Part newPart(@RequestBody Part part, BindingResult bindingResult) throws ValidationException {
-        if (bindingResult.hasErrors()){
-            throw new ValidationException("Part can not added in the PartsList;");
+        PartRepository pr = partRepository;
+        if (pr.findAll().stream().filter(p -> p.getId().equals(part.getId()) || p.getName().equals(part.getName())).count() > 0) {
+            return null;
+        } else {
+            return partRepository.save(part);
         }
-        return partRepository.save(part);
+
     }
 
     @GetMapping("/parts/{id}")
     Part one(@PathVariable Long id) {
 
-        return partRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        return partRepository.findById(id).orElseThrow(() -> new RuntimeException("there is no Part with the ID you entered"));
     }
 
-    @PutMapping("/parts/{id}")
-    Part replacePart(@RequestBody Part newPart, @PathVariable Long id) {
-         return partRepository.findById(id).map(part -> {
-             part.setName(newPart.getName());
-             part.setQuantity(newPart.getQuantity());
-             return partRepository.save(part);
-         }).orElseGet(()->{
-             newPart.setID(id);
-             return partRepository.save(newPart);
-         });
-
-
+    @PutMapping("/parts/{id}/{value}")
+    Part updatePart(@PathVariable Long id, @PathVariable String value) {
+        if (value.equals("decr")) {
+            return partRepository.findById(id).map(part -> {
+                part.setQuantity(part.getQuantity() - 1);
+                return partRepository.save(part);
+            }).orElseGet(() -> null);
+        } else {
+            int intvalue = Integer.valueOf(value);
+            if (intvalue > 0) {
+                return partRepository.findById(id).map(part -> {
+                    part.setQuantity(intvalue);
+                    return partRepository.save(part);
+                }).orElseGet(() -> null);
+            } else {
+                return partRepository.findById(id).map(part -> {
+                    part.setQuantity(intvalue * -1);
+                    return partRepository.save(part);
+                }).orElseGet(() -> null);
+            }
+        }
     }
+
 
     @DeleteMapping("/parts/{id}")
     void deletePart(@PathVariable Long id) {
         partRepository.deleteById(id);
+
     }
 
 }
