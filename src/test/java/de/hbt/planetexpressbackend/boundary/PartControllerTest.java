@@ -9,8 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PartControllerTest extends AbstractTest {
 
@@ -33,11 +32,7 @@ public class PartControllerTest extends AbstractTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         Part[] partList = super.mapFromJson(content, Part[].class);
-        for (Object o : Arrays.stream(partList).toArray()) {
-
-            System.out.println(o);
-        }
-        assertTrue(partList.length > 0);
+        assertNotNull(partList);
     }
 
     @Test
@@ -89,18 +84,24 @@ public class PartControllerTest extends AbstractTest {
 
     @Test
     public void updatePart() throws Exception {
-        Part part = new Part();
-        part.setName("Lemon");
-        part.setQuantity(6776);
+        Part part = new Part(9L, "Beatmungsgeraet", 7);
 
         String inputJson = super.mapToJson(part);
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri+ "/2/4")
-                .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(inputJson)).andReturn();
+        Part partUpdate = new Part();
+        partUpdate.setName("Lemon");
+        partUpdate.setQuantity(6776);
+
+        String inputJsonUpdate = super.mapToJson(part);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri+ "/9/"+ partUpdate.getQuantity())
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJsonUpdate)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(content, "{\"id\":2,\"name\":\"Sauerstoffflaschen\",\"quantity\":4}");
+        assertEquals(content, "{\"id\":9,\"name\":\"Beatmungsgeraet\",\"quantity\":6776}");
     }
 
 
@@ -119,7 +120,6 @@ public class PartControllerTest extends AbstractTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         String contentBefore = mvcResultBeforeDELETEPart.getResponse().getContentAsString();
         Part[] partListBeforeDELETE = super.mapFromJson(contentBefore, Part[].class);
-       // assertTrue(Arrays.stream(partListBeforeDELETE).filter( f -> f.getId() == part.getId()).equals(true));
 
 
         MvcResult mvcResultDELETE = mvc.perform(MockMvcRequestBuilders.delete(uri + "/21")).andReturn();
