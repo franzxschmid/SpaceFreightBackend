@@ -1,137 +1,99 @@
 package de.hbt.planetexpressbackend.boundary;
 
+
+import de.hbt.planetexpressbackend.control.PartRepository;
 import de.hbt.planetexpressbackend.entity.Part;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-public class PartControllerTest extends AbstractTest {
 
-    private  String uri = "/parts";
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+public class PartControllerTest {
 
-    @Override
-    @Before
-    public void setUp() {
+    private final String uri = "/parts/";
 
-        super.setUp();
+    @Autowired
+    private TestRestTemplate testRestTemplate;
+
+    @Autowired
+    private PartRepository partRepository;
+
+    @BeforeEach
+    void setUp() {
+        partRepository.deleteAll();
     }
 
 
-    @Test
-    public void getAllParts() throws Exception {
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+    private Part createNewPart() {
 
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        Part[] partList = super.mapFromJson(content, Part[].class);
-        assertNotNull(partList);
+        return  Part.createPart( "Lautsprecher", 7);
+
     }
 
+
+    private List<Part> findAllParts() {
+        ResponseEntity<List<Part>> response = testRestTemplate.exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        return response.getBody();
+    }
+
+
+    // with....should...
     @Test
-    public void savePart() throws Exception {
-        Part part = new Part(9L, "Beatmungsgerät", 7);
-            // we'll remember the List of Part
-        MvcResult mvcResultBeforeSavePart = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-        String contentBefore = mvcResultBeforeSavePart.getResponse().getContentAsString();
-        Part[] partListBefore = super.mapFromJson(contentBefore, Part[].class);
+    public void shouldSaveNewPart() {
+        ResponseEntity<Part> response = testRestTemplate.postForEntity(uri, createNewPart(), Part.class);
 
 
-
-        String inputJson = super.mapToJson(part);
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-
-
-
-        MvcResult mvcResultAfterSavePart = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-        String contentAfter = mvcResultAfterSavePart.getResponse().getContentAsString();
-
-        Part[] partListAfter = super.mapFromJson(contentAfter, Part[].class);
-        // the new Part added, also size has increased
-        assertTrue(partListAfter.length > partListBefore.length);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(findAllParts()).contains(response.getBody());
     }
 
     @Test
-    public void one() throws Exception {
-        Part part = new Part(9L, "Beatmungsgeraet", 7);
+    public void withSavedPart_shouldGetSavedPartById() {
 
-        String inputJson = super.mapToJson(part);
-         mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
-        MvcResult mvcResultAfterSavePart = mvc.perform(MockMvcRequestBuilders.get(uri + "/9")
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-        String content = mvcResultAfterSavePart.getResponse().getContentAsString();
-        Part partFrom = super.mapFromJson(content, Part.class);
-        assertTrue(part.getId().equals(partFrom.getId()));
-        assertTrue(part.getName().equals(partFrom.getName()));
+        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
+        ResponseEntity<Part> getPart = testRestTemplate.getForEntity(uri + Objects.requireNonNull(savePart.getBody()).getId(), Part.class);
+
+        assertThat(getPart.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(findAllParts()).contains(savePart.getBody());
+        assertThat(findAllParts()).contains(getPart.getBody());
+        assertThat(savePart).isEqualTo(getPart);
     }
-
 
     @Test
-    public void updatePart() throws Exception {
-        Part part = new Part(9L, "Beatmungsgeraet", 7);
+    public void withSavedPart_shouldUpdateTheSavedPart() {
+        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
+        ResponseEntity<Part> response = testRestTemplate.exchange(uri + Objects.requireNonNull(savePart.getBody()).getId() + "/89" , HttpMethod.PUT, null, Part.class);
 
-        String inputJson = super.mapToJson(part);
-        mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
-        Part partUpdate = new Part();
-        partUpdate.setName("Lemon");
-        partUpdate.setQuantity(6776);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        String inputJsonUpdate = super.mapToJson(part);
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri+ "/9/"+ partUpdate.getQuantity())
-                .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJsonUpdate)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(content, "{\"id\":9,\"name\":\"Beatmungsgeraet\",\"quantity\":6776}");
     }
-
 
     @Test
-    public void deletePart() throws Exception {
-        Part part = new Part(21L, "Banane", 21);
-        // first post new Object in to DB
-        String inputJson = super.mapToJson(part);
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        //
-        MvcResult mvcResultBeforeDELETEPart = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-        String contentBefore = mvcResultBeforeDELETEPart.getResponse().getContentAsString();
-        Part[] partListBeforeDELETE = super.mapFromJson(contentBefore, Part[].class);
-
-
-        MvcResult mvcResultDELETE = mvc.perform(MockMvcRequestBuilders.delete(uri + "/21")).andReturn();
-        int statusDELETE = mvcResultDELETE.getResponse().getStatus();
-        assertEquals(200, statusDELETE);
-
-        MvcResult mvcResultAfterDELETEPart = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-        String contentAfter = mvcResultAfterDELETEPart.getResponse().getContentAsString();
-        Part[] partListAfterDELETE = super.mapFromJson(contentAfter, Part[].class);
-        assertTrue(partListBeforeDELETE.length > partListAfterDELETE.length);
+    public void whenDeletingPart_shouldNoLongerReturnDeletedPart() {
+        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
+        testRestTemplate.delete(uri + savePart.getBody().getId());
+        assertThat(findAllParts())
+                .extracting(Part::getId, Part::getName)
+                .doesNotContain(Tuple.tuple(8L, "VideoRecorder"));
 
     }
+
 
 }
