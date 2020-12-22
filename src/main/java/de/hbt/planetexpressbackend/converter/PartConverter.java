@@ -35,7 +35,6 @@ public class PartConverter implements AttributeConverter<Part, String> {
         return partConverted;
     }
 
-
     @Override
     public String convertToDatabaseColumn(Part part) {
         if (part == null) {
