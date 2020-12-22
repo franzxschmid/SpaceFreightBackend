@@ -39,8 +39,9 @@ public class PartControllerTest {
 
 
     private Part createNewPart() {
-
-        return  Part.createPart( "Lautsprecher", 7);
+        Part pat =new Part( 6L, "Lautsprecher",4);
+        pat.setId(pat.getId());
+        return  pat;
 
     }
 

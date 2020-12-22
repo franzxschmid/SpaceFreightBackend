@@ -1,6 +1,8 @@
 package de.hbt.planetexpressbackend.config;
 
+import de.hbt.planetexpressbackend.control.FreighterRepository;
 import de.hbt.planetexpressbackend.control.PartRepository;
+import de.hbt.planetexpressbackend.entity.Freighter;
 import de.hbt.planetexpressbackend.entity.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +24,23 @@ class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(PartRepository repository) {
         return args -> {
-            log.info("Preloading " + repository.save(Part.createPart("Weltraumdachziegel", 12)));
-            log.info("Preloading " + repository.save( Part.createPart("Sauerstoffflaschen", 11)));
-            log.info("Preloading " + repository.save( Part.createPart("Astronautennahrung", 15)));
-            log.info("Preloading " + repository.save( Part.createPart("Raumanzüge", 14)));
-            log.info("Preloading" + repository.save(Part.createPartWithEmptyQuantity("Headset")) );
+            log.info("Preloading " + repository.save(new Part("Weltraumdachziegel",12)));
+            log.info("Preloading " + repository.save(new Part("Sauerstoffflaschen",13)));
+            log.info("Preloading " + repository.save(new Part("Astronautennahrung",22)));
+            log.info("Preloading " + repository.save(new Part("Raumanzüge",32)));
+            log.info("Preloading " + repository.save(new Part("Headset",4)) );
+        };
+    }
+
+    @Bean
+    CommandLineRunner initDatabaseFreighter(FreighterRepository repository) {
+        return args -> {
+            log.info("Preloading " + repository.save(Freighter.createFreighter("Construction1")));
+            log.info("Preloading " + repository.save(Freighter.createFreighter("Construction2")));
+            log.info("Preloading " + repository.save(Freighter.createFreighter("Construction3")));
+            log.info("Preloading " + repository.save(Freighter.createFreighter("Construction4")));
+            log.info("Preloading " + repository.save(Freighter.createFreighter("Construction5")));
+
         };
     }
 }

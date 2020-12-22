@@ -1,30 +1,27 @@
 package de.hbt.planetexpressbackend.entity;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 @Getter
 @Setter
 @Table
-@Where(clause = "deleted='false' ")
-@SQLDelete(sql = "UPDATE part SET deleted=true WHERE id=? ")
+@SQLDelete(sql = "UPDATE part SET visible=false WHERE id=? ")
 public class Part implements Serializable {
 
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Column(length = 100)
     private String name;
@@ -33,29 +30,25 @@ public class Part implements Serializable {
     private int quantity;
 
     @Column
-    private boolean deleted;
+    private boolean visible = true;
 
 
-    private Part(String name, Integer quantity) {
+    public Part(String name, Integer quantity) {
         this.name = name;
         this.quantity = quantity;
-        this.deleted = false;
+
     }
 
-    public void unremove(){
-        this.setDeleted(false);
+    public Part(Long id, String name, Integer quantity) {
+        this.name = name;
+        this.quantity = quantity;
+        this.id = id;
     }
 
-    public void remove(){
-        this.setDeleted(true);
-    }
 
     public static Part createPart(String name, Integer quantity) {
         return new Part(name, quantity);
-    }
 
-    public static Part createPartWithEmptyQuantity(String name) {
-        return new Part(name, 0);
     }
 
 
@@ -67,8 +60,9 @@ public class Part implements Serializable {
         if (!(o instanceof Part))
             return false;
         Part part = (Part) o;
-        return Objects.equals(this.id, part.id) && Objects.equals(this.name, part.name) && Objects.equals(this.quantity, part.quantity)
-                && Objects.equals(this.deleted, part.deleted);
+        return Objects.equals(this.id, part.id)
+                && Objects.equals(this.name, part.name)
+                && Objects.equals(this.quantity, part.quantity);
     }
 
     @Override
