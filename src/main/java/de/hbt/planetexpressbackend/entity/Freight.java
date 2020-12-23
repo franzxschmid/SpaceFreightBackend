@@ -3,10 +3,13 @@ package de.hbt.planetexpressbackend.entity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+
 import javax.persistence.*;
-import java.util.*;
-
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 
 @NoArgsConstructor
@@ -14,34 +17,33 @@ import java.util.*;
 @Getter
 @Table
 @Entity
-public class Freighter {
+@SQLDelete(sql = "UPDATE freighter SET visible=false WHERE id=? ")
+public class Freight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 100)
     private String name;
     @Column
-    private Date  date ;
+    private Date date = new Date();
     @Column
-    private boolean visible ;
+    private boolean visible =  true;
     @ElementCollection
-    private List<Component> components;
+    private List<Component> components = new ArrayList<>();
 
-    public Freighter( String name) {
+    public Freight(String name) {
         this.name = name;
-        this.date = new Date();
-        this.visible = true;
-        this.components = new ArrayList<>();
-        setDate(date);
-        setVisible(visible);
-    }
-    public static Freighter createFreighter(String name){
-        return new Freighter(name);
+
     }
 
-    public void setName(String name){
+    public static Freight createFreight(String name) {
+        return new Freight(name);
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
+
     public void setDate(Date date) {
         this.date = date;
     }
@@ -50,17 +52,18 @@ public class Freighter {
         this.visible = visible;
     }
 
-    public void setPartInComponent(Part part) {
-       components.add(new Component(part, part.getQuantity()));
+    public void addComponent(Component component) {
+        if (components.isEmpty() || !components.contains(component)) {
+            components.add(component);
+        }
     }
-
 
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Freighter that = (Freighter) o;
+        Freight that = (Freight) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(date, that.date) &&

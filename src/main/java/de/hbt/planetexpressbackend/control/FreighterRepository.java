@@ -1,8 +1,8 @@
 package de.hbt.planetexpressbackend.control;
 
-import de.hbt.planetexpressbackend.entity.Freighter;
+import de.hbt.planetexpressbackend.entity.Freight;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FreighterRepository extends JpaRepository<Freighter, Long> {
+public interface FreighterRepository extends JpaRepository<Freight, Long> {
 
 }

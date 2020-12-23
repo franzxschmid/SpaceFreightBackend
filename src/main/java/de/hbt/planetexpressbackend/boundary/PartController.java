@@ -43,12 +43,11 @@ public class PartController {
 
     }
 
-
+// gibt trotz false zurueck
     @GetMapping(value = {"/parts/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Part> getPart(@PathVariable Long id) {
 
-
-        return ResponseEntity.ok(partRepository.findById(id)
+        return ResponseEntity.ok(partRepository.findById(id).filter(p -> p.isVisible())
                 .orElseThrow(() -> new RuntimeException("the part was deleted or it doesn't exist")));
     }
 
