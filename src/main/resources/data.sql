@@ -1,4 +1,4 @@
-/*
+
 drop table if exists part;
 
 create table part
@@ -11,18 +11,18 @@ create table part
 
 
 
-INSERT INTO part(name, quantity, visible)
-VALUES ('Beatmunsgerät', 12, false),
-       ('Staubsauger', 13, false),
-       ('Fernrohr', 14, false),
-       ('Headset', 15, false),
-       ('Luftpumpe', 16, false),
-       ('Kamera', 17, false),
-       ('Recorder', 18, false),
-       ('Lautsprecher', 19, false),
-
-       ('Musik-Anlage', 20,false),
-       ('Video-Recorder', 21,false);
+INSERT INTO part(name,  visible)
+VALUES ('Beatmunsgerät', true),
+       ('Staubsauger',  true),
+       ('Fernrohr',  true),
+       ('Headset',  true),
+       ('Luftpumpe', true),
+       ('Kamera',  true),
+       ('Recorder',  true),
+       ('Lautsprecher',  true),
+       ('Musik-Anlage', true),
+       ('Video-Recorder',true);
 commit;
+select * from part;
 
-*/
+

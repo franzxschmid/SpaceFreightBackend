@@ -39,9 +39,9 @@ public class PartControllerTest {
 
 
     private Part createNewPart() {
-        Part pat =new Part( 6L, "Lautsprecher");
+        Part pat = new Part(16L,"Lautsprecher");
         pat.setId(pat.getId());
-        return  pat;
+        return pat;
 
     }
 
@@ -62,13 +62,15 @@ public class PartControllerTest {
 
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        System.out.println(findAllParts());
         assertThat(findAllParts()).contains(response.getBody());
+
     }
 
     @Test
     public void withSavedPart_shouldGetSavedPartById() {
 
-        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
+        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri, createNewPart(), Part.class);
         ResponseEntity<Part> getPart = testRestTemplate.getForEntity(uri + Objects.requireNonNull(savePart.getBody()).getId(), Part.class);
 
         assertThat(getPart.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -77,18 +79,10 @@ public class PartControllerTest {
         assertThat(savePart).isEqualTo(getPart);
     }
 
-    @Test
-    public void withSavedPart_shouldUpdateTheSavedPart() {
-        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
-        ResponseEntity<Part> response = testRestTemplate.exchange(uri + Objects.requireNonNull(savePart.getBody()).getId() + "/89" , HttpMethod.PUT, null, Part.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-    }
 
     @Test
     public void whenDeletingPart_shouldNoLongerReturnDeletedPart() {
-        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri , createNewPart(), Part.class);
+        ResponseEntity<Part> savePart = testRestTemplate.postForEntity(uri, createNewPart(), Part.class);
         testRestTemplate.delete(uri + savePart.getBody().getId());
         assertThat(findAllParts())
                 .extracting(Part::getId, Part::getName)
@@ -96,5 +90,15 @@ public class PartControllerTest {
 
     }
 
-
+    @Test
+    public void whenSavePart_thatHasBeenDeleted_onlyUpdatePart() {
+        Part part1 = createNewPart();
+        ResponseEntity<Part> savePart1 = testRestTemplate.postForEntity(uri, part1, Part.class);
+        testRestTemplate.delete(uri + savePart1.getBody().getId());
+        Part part2 = part1;
+        part2.setName("Banane");
+        ResponseEntity<Part> savePart2 = testRestTemplate.postForEntity(uri, part2, Part.class);
+        System.out.println(savePart1.getBody().getId() +"-----"+ savePart2.getBody().getId());
+        assertThat(savePart1.getBody().getName()).isEqualTo(savePart2.getBody().getName());
+    }
 }

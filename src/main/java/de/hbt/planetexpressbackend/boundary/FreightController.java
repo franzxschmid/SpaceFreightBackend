@@ -3,7 +3,6 @@ package de.hbt.planetexpressbackend.boundary;
 import de.hbt.planetexpressbackend.control.FreightRepository;
 import de.hbt.planetexpressbackend.entity.Component;
 import de.hbt.planetexpressbackend.entity.Freight;
-import de.hbt.planetexpressbackend.entity.Part;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;

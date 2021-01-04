@@ -1,13 +1,13 @@
 
-insert into part(id, name, quantity) values
-(1L,'Beatmunsgerät', 12),
-(2L,'Staubsauger', 13),
-(3L,'Fernrohr', 14),
-(4L,'Headset', 15),
-(5L,'Luftpumpe', 16),
-(6L,'Kamera', 17),
-(7L,'Recorder', 18),
-(8L,'Lautsprecher', 19),
-(9L,'MusikAnlage', 20),
-(10L,'VideoRecorder', 21);
+insert into part(id, name) values
+(1L,'Beatmunsgerät'),
+(2L,'Staubsauger'),
+(3L,'Fernrohr'),
+(4L,'Headset'),
+(5L,'Luftpumpe'),
+(6L,'Kamera'),
+(7L,'Recorder'),
+(8L,'Lautsprecher'),
+(9L,'MusikAnlage'),
+(10L,'VideoRecorder');
 commit ;

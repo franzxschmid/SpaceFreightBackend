@@ -33,7 +33,7 @@ class LoadDatabase {
     }
 
     @Bean
-    CommandLineRunner initDatabaseFreighter(FreightRepository repository) {
+    CommandLineRunner initDatabaseFreight(FreightRepository repository) {
         return args -> {
             log.info("Preloading " + repository.save(Freight.createFreight("Construction1")));
             log.info("Preloading " + repository.save(Freight.createFreight("Construction2")));
@@ -43,4 +43,5 @@ class LoadDatabase {
 
         };
     }
+
 }
