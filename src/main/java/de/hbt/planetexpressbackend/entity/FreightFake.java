@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Table
 @SQLDelete(sql = "UPDATE freightone SET visible=false WHERE id=? ")
-public class FreightOne {
+public class FreightFake {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class FreightOne {
 
     @Column
     @OneToMany
-    private List<PartOne> partOneList = new ArrayList<>();
+    private List<PartFake> partFakeList = new ArrayList<>();
 
     @Column
     private boolean visible = true;

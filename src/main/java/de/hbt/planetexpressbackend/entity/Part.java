@@ -23,31 +23,27 @@ public class Part implements Serializable {
     private Long id;
 
 
-    @Column(length = 100)
+    @Column
     private String name;
 
-    @Column
-    private int quantity;
 
     @Column
     private boolean visible = true;
 
 
-    public Part(String name, Integer quantity) {
+    public Part(String name) {
         this.name = name;
-        this.quantity = quantity;
 
     }
 
-    public Part(Long id, String name, Integer quantity) {
+    public Part(Long id, String name) {
         this.name = name;
-        this.quantity = quantity;
         this.id = id;
     }
 
 
-    public static Part createPart(String name, Integer quantity) {
-        return new Part(name, quantity);
+    public static Part createPart(String name ) {
+        return new Part(name);
 
     }
 
@@ -61,18 +57,17 @@ public class Part implements Serializable {
             return false;
         Part part = (Part) o;
         return Objects.equals(this.id, part.id)
-                && Objects.equals(this.name, part.name)
-                && Objects.equals(this.quantity, part.quantity);
+                && Objects.equals(this.name, part.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.quantity);
+        return Objects.hash(this.id, this.name);
     }
 
     @Override
     public String toString() {
-        return "{id=" + id + ", name=" + name + ", quantity=" + quantity + "}";
+        return "{id=" + id + ", name=" + name + "}";
     }
 
 }

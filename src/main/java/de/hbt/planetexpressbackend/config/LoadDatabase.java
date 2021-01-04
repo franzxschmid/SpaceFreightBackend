@@ -1,6 +1,6 @@
 package de.hbt.planetexpressbackend.config;
 
-import de.hbt.planetexpressbackend.control.FreighterRepository;
+import de.hbt.planetexpressbackend.control.FreightRepository;
 import de.hbt.planetexpressbackend.control.PartRepository;
 import de.hbt.planetexpressbackend.entity.Freight;
 import de.hbt.planetexpressbackend.entity.Part;
@@ -24,16 +24,16 @@ class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(PartRepository repository) {
         return args -> {
-            log.info("Preloading " + repository.save(new Part("Weltraumdachziegel",12)));
-            log.info("Preloading " + repository.save(new Part("Sauerstoffflaschen",13)));
-            log.info("Preloading " + repository.save(new Part("Astronautennahrung",22)));
-            log.info("Preloading " + repository.save(new Part("Raumanzüge",32)));
-            log.info("Preloading " + repository.save( Part.createPart("Headset",4)) );
+            log.info("Preloading " + repository.save(new Part("Weltraumdachziegel")));
+            log.info("Preloading " + repository.save(new Part("Sauerstoffflaschen")));
+            log.info("Preloading " + repository.save(new Part("Astronautennahrung")));
+            log.info("Preloading " + repository.save(new Part("Raumanzüge")));
+            log.info("Preloading " + repository.save( Part.createPart("Headset")) );
         };
     }
 
     @Bean
-    CommandLineRunner initDatabaseFreighter(FreighterRepository repository) {
+    CommandLineRunner initDatabaseFreighter(FreightRepository repository) {
         return args -> {
             log.info("Preloading " + repository.save(Freight.createFreight("Construction1")));
             log.info("Preloading " + repository.save(Freight.createFreight("Construction2")));

@@ -1,10 +1,9 @@
 package de.hbt.planetexpressbackend.boundary;
 
-import de.hbt.planetexpressbackend.control.FreighterRepository;
+import de.hbt.planetexpressbackend.control.FreightRepository;
 import de.hbt.planetexpressbackend.entity.Component;
 import de.hbt.planetexpressbackend.entity.Freight;
 import de.hbt.planetexpressbackend.entity.Part;
-import org.assertj.core.util.DateUtil;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -18,10 +17,10 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-public class FreighterController {
-    private final FreighterRepository repository;
+public class FreightController {
+    private final FreightRepository repository;
 
-    public FreighterController(FreighterRepository repository) {
+    public FreightController(FreightRepository repository) {
         this.repository = repository;
     }
 
@@ -31,7 +30,7 @@ public class FreighterController {
     }
 
     @PostMapping(value = "/freights", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Freight> saveFreighter(@RequestBody Freight freight) {
+    ResponseEntity<Freight> saveFreight(@RequestBody Freight freight) {
         if (StringUtils.isEmpty(freight.getName())) {
             return ResponseEntity.badRequest().build();
         }
@@ -49,14 +48,14 @@ public class FreighterController {
     }
 
     @GetMapping(value = "/freights/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Freight> getFreighter(@PathVariable Long id) {
+    ResponseEntity<Freight> getFreight(@PathVariable Long id) {
         return ResponseEntity.ok(repository.findById(id).filter(fr -> fr.isVisible())
                 .orElseThrow(() -> new RuntimeException("the FREIGHT was deleted or it doesn't exist !!! ")));
     }
 
 
     @PatchMapping(value = {"/freights/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Freight> resetFreighter(@PathVariable Long id) {
+    ResponseEntity<Freight> resetFreight(@PathVariable Long id) {
         repository.findById(id).map(freight -> {
             freight.setVisible(true);
             return ResponseEntity.ok(repository.save(freight));
@@ -67,23 +66,22 @@ public class FreighterController {
 
 
     @PutMapping(value = "freights/{id}/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Freight> updateFreighterDate(@PathVariable Long id, @PathVariable String date) throws ParseException {
+    ResponseEntity<Freight> updateFreightDate(@PathVariable Long id, @PathVariable String date) throws ParseException {
         if (StringUtils.isEmpty(date)) {
             return ResponseEntity.badRequest().build();
         } else {
             if (date.length() >= 8) {
                 DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 Date changedDate = formatter.parse(date);
-                System.out.println("hier kommt das Datum: " + changedDate);
                 repository.findById(id).map(freight -> {
 
                     freight.setDate(changedDate);
-                    return freight;
+                    return repository.save(freight);
                 });
             } else {
-                repository.findById(id).map(freighter -> {
-                    freighter.setName(date);
-                    return freighter;
+                repository.findById(id).map(freight -> {
+                    freight.setName(date);
+                    return freight;
                 });
             }
             return ResponseEntity.ok(repository.findById(id).orElseThrow(() -> new RuntimeException("it doesnt update")));
@@ -91,10 +89,11 @@ public class FreighterController {
     }
 
     @PostMapping(value = "freights/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Freight> addPart(@RequestBody Part part, @PathVariable Long id) {
-        repository.findById(id).map(freighter -> {
-            freighter.addComponent(new Component(part, part.getQuantity()));
-            return repository.save(freighter);
+    ResponseEntity<Freight> addPart(@RequestBody Component component, @PathVariable Long id) {
+
+        repository.findById(id).map(freight -> {
+            freight.addComponent(component);
+            return repository.save(freight);
         });
         return ResponseEntity.ok(repository.findById(id).orElseThrow(() -> new RuntimeException("it doesnt update")));
     }
@@ -102,8 +101,16 @@ public class FreighterController {
 
 
     @DeleteMapping("/freights/{id}")
-    void deleteFreighter(@PathVariable Long id) {
+    void deleteFreight(@PathVariable Long id) {
         repository.deleteById(id);
+    }
+
+    @DeleteMapping("freights/{id}/{partId}")
+    void  deletePart(@PathVariable Long id, @PathVariable String partId) {
+        repository.findById(id).map(freight -> {
+            freight.deleteComponent(Integer.valueOf(partId));
+           return repository.save(freight);
+        });
     }
 
 }

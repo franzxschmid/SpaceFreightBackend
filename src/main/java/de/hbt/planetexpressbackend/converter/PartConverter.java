@@ -24,10 +24,7 @@ public class PartConverter implements AttributeConverter<Part, String> {
 
             partConverted.setName(pieces[1]);
         }
-        if (pieces.length >= 3 && pieces[2] != null && !pieces[2].isEmpty()) {
 
-            partConverted.setQuantity(Integer.parseInt(pieces[2]));
-        }
         if (pieces.length >= 4 && pieces[3] != null && !pieces[3].isEmpty()) {
 
             partConverted.setVisible(pieces[3].equals("true"));
@@ -44,7 +41,6 @@ public class PartConverter implements AttributeConverter<Part, String> {
         if (part.getId() != null && !part.getName().isEmpty()) {
             sb.append(part.getId());
             sb.append(part.getName());
-            sb.append(part.getQuantity());
             sb.append(part.isVisible());
         }
         return sb.toString();

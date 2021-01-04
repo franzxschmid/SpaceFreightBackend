@@ -6,10 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @NoArgsConstructor
@@ -17,17 +14,18 @@ import java.util.Objects;
 @Getter
 @Table
 @Entity
-@SQLDelete(sql = "UPDATE freighter SET visible=false WHERE id=? ")
+@SQLDelete(sql = "UPDATE freight SET visible=false WHERE id=? ")
 public class Freight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 100)
+    @Column
     private String name;
     @Column
-    private Date date = new Date();
+    private Date constructionDate = new Date();
     @Column
     private boolean visible =  true;
+
     @ElementCollection
     private List<Component> components = new ArrayList<>();
 
@@ -45,7 +43,7 @@ public class Freight {
     }
 
     public void setDate(Date date) {
-        this.date = date;
+        this.constructionDate.setTime(date.getTime());
     }
 
     public void setVisible(boolean visible) {
@@ -53,8 +51,22 @@ public class Freight {
     }
 
     public void addComponent(Component component) {
-        if (components.isEmpty() || !components.contains(component)) {
+        for (Component comp : components){
+             if (comp.getPart().getId().equals(component.getPart().getId())){
+                comp.setQuantity(component.getQuantity());
+                comp.getPart().setName(component.getPart().getName());
+
+                return;
+            }
+        }
+        if (!components.contains(component)){
             components.add(component);
+        }
+
+    }
+    public void deleteComponent(Integer index) {
+        if (components.size() >= index-1){
+            components.remove(index-1);
         }
     }
 
@@ -66,22 +78,22 @@ public class Freight {
         Freight that = (Freight) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(date, that.date) &&
+                Objects.equals(constructionDate, that.constructionDate) &&
                 Objects.equals(components, that.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, components);
+        return Objects.hash(id, name, constructionDate, components);
     }
 
     @Override
     public String toString() {
-        return "FreightPlan{" +
+        return "Freight{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", components=" + components +
+                ", name= '" + name + '\'' +
+                ", constructionDate= " + constructionDate +
+                ", components= " + components +
                 '}';
     }
 
